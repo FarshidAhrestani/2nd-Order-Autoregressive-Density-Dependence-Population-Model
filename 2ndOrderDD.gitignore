@@ -1,0 +1,57 @@
+############################################################# 
+# AR-2 state-space model for time-series count data
+# 1) System model: X[t+1] = b0 + (1+b1)X[t] + b2X[t-1] + epsilon
+# X[t+1], X[t] & X[t-1] :loge(abundance) in year (t=1), t, & (t-1)
+# b0 = Intrinsic growth rate
+# b1 = 1st order density dependent autogregressive term
+# b2 = 2nd order density dependent autogregressive term
+# epsilon = process variance = a time-dependent stochastic term with mean=0 
+# 2) Observation model: Y[t] = X[t] + observation error 
+# Y[t] ~ normal(X[t], error)
+############################################################# 
+
+model	{
+  ### Parameters and Priors ###  
+
+  log.pop[1] ~ dnorm(obs.pop.1, 0.1);  # Prior for initial population; obs.pop.1=Y[1]
+  log.pop[2] ~ dnorm(obs.pop.2, 0.1);  # Prior for initial population; obs.pop.1=Y[2]
+
+  #b0 ~ dnorm(0.35, 1.0E-6)T(-1,1);			# Ist try with max. b0 priors
+  #b0 ~ dnorm(0.2, 50);							# 2nd try with max. b0 priors
+  #b0 ~ dnorm(0.35, 1)T(-0.35,0.35);							# 3rd try with max. b0 priors
+  #b0 ~ dnorm(0.35, 50);						# 4th try with max. b0 priors
+  #b0 ~ dnorm(0.35, 100);						# 5th try with max. b0 priors
+
+  #b0 ~ dnorm(0.033, 50);         				# Prior for 1st order density dependence
+  #b0 ~ dnorm(0.033, 100);						# Prior for 1st order density dependence
+  #b0 ~ dnorm(0.033, 1.0E-6);					# Prior for 1st order density dependence
+
+  b0 ~ dnorm(0.0, 1.0E-6);						# Prior for 1st order density dependence
+  b1 ~ dnorm(0.0, 1.0E-6);                		# Prior for 1st order density dependence
+  b2 ~ dnorm(0.0, 1.0E-6);                		# Prior for 2nd order density dependence
+
+  tau.proc ~ dgamma(1.0E-3, 1.0E-3);      # Prior for var. of state. process
+  var.proc <- 1/tau.proc;
+
+  tau.obs ~ dgamma(1.0E-3, 1.0E-3);       # Prior for var. of obs. process
+  var.obs <- 1/tau.obs;
+
+  ### State-Space model ###
+  
+  # System process model
+  for (t in 2:length(Y)){    
+	log.pop.mu[t+1] <- b0 + (b1+1)*log.pop[t] + b2*log.pop[t-1];
+    log.pop[t+1] ~ dnorm(log.pop.mu[t+1], tau.proc);
+  }
+
+  # Observation process model
+  for (t in 1:length(Y)){    
+	Y[t] ~ dnorm(log.pop[t], tau.obs);
+  }
+
+  # Population sizes on non-log scale
+  for (t in 1:length(Y)){
+	#real.pop[t] <- exp(log.pop[t]);
+  	real.pop[t] <- log.pop[t];
+  }
+}
