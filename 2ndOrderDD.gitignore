@@ -16,17 +16,7 @@ model	{
   log.pop[1] ~ dnorm(obs.pop.1, 0.1);  # Prior for initial population; obs.pop.1=Y[1]
   log.pop[2] ~ dnorm(obs.pop.2, 0.1);  # Prior for initial population; obs.pop.1=Y[2]
 
-  #b0 ~ dnorm(0.35, 1.0E-6)T(-1,1);			# Ist try with max. b0 priors
-  #b0 ~ dnorm(0.2, 50);							# 2nd try with max. b0 priors
-  #b0 ~ dnorm(0.35, 1)T(-0.35,0.35);							# 3rd try with max. b0 priors
-  #b0 ~ dnorm(0.35, 50);						# 4th try with max. b0 priors
-  #b0 ~ dnorm(0.35, 100);						# 5th try with max. b0 priors
-
-  #b0 ~ dnorm(0.033, 50);         				# Prior for 1st order density dependence
-  #b0 ~ dnorm(0.033, 100);						# Prior for 1st order density dependence
-  #b0 ~ dnorm(0.033, 1.0E-6);					# Prior for 1st order density dependence
-
-  b0 ~ dnorm(0.0, 1.0E-6);						# Prior for 1st order density dependence
+  b0 ~ dnorm(0.0, 1.0E-6);				# Prior for 1st order density dependence
   b1 ~ dnorm(0.0, 1.0E-6);                		# Prior for 1st order density dependence
   b2 ~ dnorm(0.0, 1.0E-6);                		# Prior for 2nd order density dependence
 
